@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'ClubPack — Sponsor College Clubs That Actually Reach Your Audience',
+  title: 'ClubPack: Sponsor College Clubs That Actually Reach Your Audience',
   description:
     'ClubPack connects brands with high-engagement college clubs. Find the right clubs, get pricing instantly, and launch campaigns that convert.',
 };
@@ -29,7 +29,7 @@ const FEATURES = [
     ),
     title: 'Live pricing, no surprises',
     description:
-      'Get accurate sponsorship rates for any club on the spot. No forms, no waiting — just ask and receive a clear quote with minimum spend.',
+      'Get accurate sponsorship rates for any club on the spot. No forms, no waiting: just ask and receive a clear quote with minimum spend.',
   },
   {
     icon: (
@@ -80,7 +80,7 @@ export default function Home() {
         </h1>
         <p className="text-muted-foreground text-lg leading-relaxed mb-10 max-w-xl">
           ClubPack matches brands with high-engagement student clubs. Describe your campaign,
-          get matched, get pricing — all in one conversation.
+          get matched, get pricing, all in one conversation.
         </p>
         <Link
           href="/chat"

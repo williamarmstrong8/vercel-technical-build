@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ClubPack — B2B Sponsor Concierge",
+  title: "ClubPack: B2B Sponsor Concierge",
   description: "Find the perfect college clubs to sponsor. AI-powered matching, live pricing, and human handoff when it matters.",
 };
 
