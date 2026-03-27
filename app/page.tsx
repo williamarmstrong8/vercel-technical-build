@@ -1,68 +1,137 @@
-'use client';
-
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 
-const EXAMPLE_PROMPTS = [
-  'Find tech clubs for college students',
-  'What run clubs do you have?',
-  'I have a $500 budget, what can I sponsor?',
+export const metadata: Metadata = {
+  title: 'ClubPack — Sponsor College Clubs That Actually Reach Your Audience',
+  description:
+    'ClubPack connects brands with high-engagement college clubs. Find the right clubs, get pricing instantly, and launch campaigns that convert.',
+};
+
+const FEATURES = [
+  {
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <circle cx="10" cy="10" r="8" />
+        <path d="M6.5 10.5l2.5 2.5 4.5-5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+    title: 'Instant club matching',
+    description:
+      'Describe your brand and campaign goals. Our AI concierge searches the ClubPack database and surfaces the best-fit clubs in seconds.',
+  },
+  {
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <rect x="3" y="5" width="14" height="10" rx="2" />
+        <path d="M3 8h14" strokeLinecap="round" />
+      </svg>
+    ),
+    title: 'Live pricing, no surprises',
+    description:
+      'Get accurate sponsorship rates for any club on the spot. No forms, no waiting — just ask and receive a clear quote with minimum spend.',
+  },
+  {
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M10 3v14M3 10h14" strokeLinecap="round" />
+      </svg>
+    ),
+    title: 'Human handoff when it matters',
+    description:
+      'High-value deals and custom requests are automatically routed to our sales team. You talk to a human the moment it makes sense.',
+  },
+];
+
+const STATS = [
+  { value: '400+', label: 'Active clubs' },
+  { value: '2M+', label: 'Student members' },
+  { value: '85%', label: 'Avg. engagement rate' },
 ];
 
 export default function Home() {
-  const [input, setInput] = useState('');
-  const router = useRouter();
-
-  function handleSend(text: string) {
-    const q = text.trim();
-    if (!q) return;
-    router.push(`/chat?q=${encodeURIComponent(q)}`);
-  }
-
   return (
-    <main className="min-h-screen bg-white flex flex-col items-center justify-center px-4 gap-8">
-      <Image
-        src="/clubpack-logo-full.png"
-        alt="ClubPack"
-        width={320}
-        height={80}
-        className="object-contain"
-        priority
-      />
+    <main className="min-h-screen bg-background text-foreground">
 
-      <div className="flex flex-wrap justify-center gap-2">
-        {EXAMPLE_PROMPTS.map((prompt) => (
-          <button
-            key={prompt}
-            onClick={() => handleSend(prompt)}
-            className="px-4 py-2 text-sm border border-zinc-300 rounded-full text-zinc-700 hover:bg-zinc-50 transition-colors"
-          >
-            {prompt}
-          </button>
-        ))}
-      </div>
-
-      <div className="flex items-center w-full max-w-xl border border-zinc-300 rounded-full px-5 py-3 shadow-sm">
-        <input
-          className="flex-1 text-base outline-none text-zinc-800 placeholder:text-zinc-400"
-          placeholder="type your questions about clubs here"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') handleSend(input);
-          }}
+      {/* Nav */}
+      <nav className="flex items-center justify-between px-6 py-5 max-w-5xl mx-auto">
+        <Image
+          src="/clubpack-logo-full.png"
+          alt="ClubPack"
+          width={120}
+          height={32}
+          className="h-auto w-auto object-contain"
+          priority
         />
-        <button
-          onClick={() => handleSend(input)}
-          disabled={!input.trim()}
-          className="ml-3 w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex-none"
+        <Link
+          href="/chat"
+          className="text-sm font-medium text-foreground hover:opacity-70 transition-opacity"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 12h14M12 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
+          Open Advisor →
+        </Link>
+      </nav>
+
+      {/* Hero */}
+      <section className="flex flex-col items-center text-center px-4 pt-24 pb-20 max-w-3xl mx-auto">
+        <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground mb-6">
+          B2B Sponsor Concierge
+        </span>
+        <h1 className="text-5xl font-semibold tracking-tight leading-tight mb-6">
+          Sponsor college clubs that actually reach your audience
+        </h1>
+        <p className="text-muted-foreground text-lg leading-relaxed mb-10 max-w-xl">
+          ClubPack matches brands with high-engagement student clubs. Describe your campaign,
+          get matched, get pricing — all in one conversation.
+        </p>
+        <Link
+          href="/chat"
+          className="px-7 py-3.5 bg-foreground text-background text-sm font-medium rounded-full hover:opacity-80 transition-opacity"
+        >
+          Find clubs now
+        </Link>
+      </section>
+
+      {/* Stats */}
+      <section className="border-y border-border py-12">
+        <div className="max-w-3xl mx-auto px-4 grid grid-cols-3 gap-8 text-center">
+          {STATS.map((s) => (
+            <div key={s.label}>
+              <p className="text-3xl font-semibold tracking-tight mb-1">{s.value}</p>
+              <p className="text-sm text-muted-foreground">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="max-w-5xl mx-auto px-4 py-24 grid grid-cols-1 md:grid-cols-3 gap-10">
+        {FEATURES.map((f) => (
+          <div key={f.title} className="flex flex-col gap-3">
+            <div className="w-9 h-9 flex items-center justify-center rounded-lg border border-border text-foreground">
+              {f.icon}
+            </div>
+            <h3 className="font-medium text-sm">{f.title}</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">{f.description}</p>
+          </div>
+        ))}
+      </section>
+
+      {/* CTA */}
+      <section className="border-t border-border px-4 py-24 text-center">
+        <h2 className="text-3xl font-semibold tracking-tight mb-4">
+          Ready to find your clubs?
+        </h2>
+        <p className="text-muted-foreground text-base mb-8 max-w-sm mx-auto">
+          Start a conversation with our AI concierge. No forms. No sales calls to schedule.
+        </p>
+        <Link
+          href="/chat"
+          className="px-7 py-3.5 bg-foreground text-background text-sm font-medium rounded-full hover:opacity-80 transition-opacity"
+        >
+          Open the advisor
+        </Link>
+      </section>
+
     </main>
   );
 }

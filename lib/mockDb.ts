@@ -1,5 +1,3 @@
-// lib/mockDb.ts
-
 export type AudienceDemographic = 'College Students' | 'Young Professionals' | 'Teens' | 'Founders' | 'Seniors';
 export type ClubCategory = 'Tech' | 'Fitness' | 'Gaming' | 'Business' | 'Arts';
 export type PricingTier = 'Tier 1 (Enterprise)' | 'Tier 2 (Growth)' | 'Tier 3 (Starter)';
@@ -10,12 +8,11 @@ export interface Club {
     category: ClubCategory;
     audience: AudienceDemographic;
     memberCount: number;
-    averageEngagementRate: string; // Brands love this metric
+    averageEngagementRate: string;
     pricingTier: PricingTier;
     description: string;
 }
 
-// 1. The Club Database
 export const clubsDb: Club[] = [
     {
         id: 'club_001',
