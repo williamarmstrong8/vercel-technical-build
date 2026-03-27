@@ -58,9 +58,8 @@ export default function Home() {
         <Image
           src="/clubpack-logo-full.png"
           alt="ClubPack"
-          width={120}
-          height={32}
-          className="h-auto w-auto object-contain"
+          width={159}
+          height={24}
           priority
         />
         <Link

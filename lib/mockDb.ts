@@ -68,7 +68,14 @@ export const clubsDb: Club[] = [
 
 // 2. The Sponsorship Pricing & Deliverables
 // This maps to the tiers above so the agent can accurately quote brands.
-export const pricingDb: Record<PricingTier, any> = {
+export interface PricingInfo {
+    dedicatedEmail: string;
+    newsletterFeature: string;
+    inPersonEventBooth: string;
+    minimumSpend: string;
+}
+
+export const pricingDb: Record<PricingTier, PricingInfo> = {
     'Tier 1 (Enterprise)': {
         dedicatedEmail: '$1,500',
         newsletterFeature: '$800',

@@ -54,9 +54,10 @@ function ChatInner() {
         <Image
           src="/clubpack-logo-full.png"
           alt="ClubPack"
-          width={140}
-          height={36}
-          className="mb-10 h-auto w-auto object-contain"
+          width={185}
+          height={28}
+          className="mb-10"
+          priority
         />
 
         <h1 className="text-4xl font-semibold tracking-tight text-foreground text-center mb-3">
@@ -115,9 +116,8 @@ function ChatInner() {
           <Image
             src="/clubpack-logo-full.png"
             alt="ClubPack"
-            width={120}
-            height={32}
-            className="h-auto w-auto object-contain"
+            width={159}
+            height={24}
           />
         </a>
         <span className="text-xs text-muted-foreground tracking-wide">Sponsor Concierge</span>
