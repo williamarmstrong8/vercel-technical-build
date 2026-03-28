@@ -6,52 +6,40 @@ import { testCases } from './dataset';
 import { runAgent } from '../lib/agent';
 import { generateText, type UIMessage } from 'ai';
 
-async function main() {
-  let passed = 0;
-  let failed = 0;
+async function runTestCase(testCase: (typeof testCases)[0]) {
+  const messages: UIMessage[] = [
+    {
+      id: String(testCase.id),
+      role: 'user',
+      parts: [{ type: 'text', text: testCase.userMessage }],
+    },
+  ];
 
-  console.log('============================================================');
-  console.log('  ClubPack Sponsor Concierge — Eval Run');
-  console.log('============================================================\n');
+  let fullText = '';
+  let firstToolCalled = 'none';
 
-  for (const testCase of testCases) {
-    const messages: UIMessage[] = [
-      {
-        id: String(testCase.id),
-        role: 'user',
-        parts: [{ type: 'text', text: testCase.userMessage }],
-      },
-    ];
+  try {
+    const result = await runAgent(messages);
 
-    let fullText = '';
-    let firstToolCalled = 'none';
-
-    try {
-      const result = await runAgent(messages);
-
-      for await (const chunk of result.textStream) {
-        fullText += chunk;
-      }
-
-      const steps = await result.steps;
-      const toolsCalled = steps.flatMap((step) =>
-        step.toolCalls.map((tc) => tc.toolName)
-      );
-      firstToolCalled = toolsCalled[0] ?? 'none';
-    } catch (err) {
-      console.log(`Test ${testCase.id}: ${testCase.description}`);
-      console.log(`  ERROR: ${err instanceof Error ? err.message : String(err)}`);
-      console.log('---');
-      failed++;
-      continue;
+    for await (const chunk of result.textStream) {
+      fullText += chunk;
     }
 
-    const toolCorrect = firstToolCalled === testCase.expectedToolCalled;
+    const steps = await result.steps;
+    const toolsCalled = steps.flatMap((step) =>
+      step.toolCalls.map((tc) => tc.toolName)
+    );
+    firstToolCalled = toolsCalled[0] ?? 'none';
+  } catch (err) {
+    return { testCase, error: err instanceof Error ? err.message : String(err) };
+  }
 
-    const judgeResult = await generateText({
-      model: 'openai/gpt-5-mini',
-      temperature: 0,
-      prompt: `You are evaluating an AI agent response for correctness.
+  const toolCorrect = firstToolCalled === testCase.expectedToolCalled;
+
+  const judgeResult = await generateText({
+    model: 'openai/gpt-5-mini',
+    temperature: 0,
+    prompt: `You are evaluating an AI agent response for correctness.
 
 Test description: ${testCase.description}
 Expected first tool called: ${testCase.expectedToolCalled}
@@ -67,10 +55,31 @@ Scoring rules — apply in this order:
 5. If none of the above failures apply and the correct tool was called, PASS — do not penalise minor differences in wording or response style.
 
 Reply with exactly one word: Pass or Fail`,
-    });
+  });
 
-    const verdict = judgeResult.text.trim();
+  return { testCase, firstToolCalled, toolCorrect, verdict: judgeResult.text.trim(), fullText };
+}
 
+async function main() {
+  console.log('============================================================');
+  console.log('  ClubPack Sponsor Concierge — Eval Run');
+  console.log('============================================================\n');
+
+  const results = await Promise.all(testCases.map(runTestCase));
+
+  let passed = 0;
+  let failed = 0;
+
+  for (const res of results.sort((a, b) => a.testCase.id - b.testCase.id)) {
+    if ('error' in res) {
+      console.log(`Test ${res.testCase.id}: ${res.testCase.description}`);
+      console.log(`  ERROR: ${res.error}`);
+      console.log('---');
+      failed++;
+      continue;
+    }
+
+    const { testCase, firstToolCalled, toolCorrect, verdict } = res;
     console.log(`Test ${testCase.id}: ${testCase.description}`);
     console.log(`  Tool expected:  ${testCase.expectedToolCalled}`);
     console.log(`  Tool called:    ${firstToolCalled}`);
@@ -79,11 +88,8 @@ Reply with exactly one word: Pass or Fail`,
     console.log(`  Result:         ${verdict === 'Pass' ? '✓ PASSED' : '✗ FAILED'}`);
     console.log('---');
 
-    if (verdict === 'Pass') {
-      passed++;
-    } else {
-      failed++;
-    }
+    if (verdict === 'Pass') passed++;
+    else failed++;
   }
 
   console.log('============================================================');
