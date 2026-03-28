@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { clubsDb } from '@/lib/mockDb';
+import { getSql } from '@/lib/db';
 
 export const searchClubs = {
   description: "Search the ClubPack database for clubs that match a brand's sponsorship goals.",
@@ -32,32 +32,38 @@ export const searchClubs = {
     minMembers?: number;
     pricingTier?: string;
   }) => {
-    let results = [...clubsDb];
+    const sql  = getSql();
+    const cat  = category    ?? null;
+    const aud  = audience    ?? null;
+    const min  = minMembers  ?? null;
+    const tier = pricingTier ?? null;
 
-    if (category) {
-      results = results.filter(
-        (club) => club.category.toLowerCase() === category.toLowerCase()
-      );
-    }
-
-    if (audience) {
-      results = results.filter(
-        (club) => club.audience.toLowerCase() === audience.toLowerCase()
-      );
-    }
-
-    if (minMembers !== undefined) {
-      results = results.filter((club) => club.memberCount >= minMembers);
-    }
-
-    if (pricingTier) {
-      results = results.filter((club) => club.pricingTier === pricingTier);
-    }
+    const results = await sql`
+      SELECT * FROM clubs
+      WHERE (${cat}::text  IS NULL OR LOWER(category)   = LOWER(${cat}::text))
+        AND (${aud}::text  IS NULL OR LOWER(audience)   = LOWER(${aud}::text))
+        AND (${min}::int   IS NULL OR member_count      >= ${min}::int)
+        AND (${tier}::text IS NULL OR pricing_tier      = ${tier}::text)
+      ORDER BY member_count DESC
+    `;
 
     if (results.length === 0) {
       return { found: false, message: 'No clubs found matching those criteria' };
     }
 
-    return { found: true, count: results.length, clubs: results };
+    return {
+      found: true,
+      count: results.length,
+      clubs: results.map((c) => ({
+        id: c.id,
+        name: c.name,
+        category: c.category,
+        audience: c.audience,
+        memberCount: c.member_count,
+        averageEngagementRate: c.average_engagement_rate,
+        pricingTier: c.pricing_tier,
+        description: c.description,
+      })),
+    };
   },
 };
