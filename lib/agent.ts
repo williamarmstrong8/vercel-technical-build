@@ -5,14 +5,14 @@ import { searchClubs, getPricing, escalateToHuman } from '@/lib/tools';
 
 export async function runAgent(messages: UIMessage[]) {
   return streamText({
-    model: 'anthropic/claude-sonnet-4.5',
+    model: 'anthropic/claude-haiku-4.5',
     system: CONCIERGE_SYSTEM_PROMPT,
     messages: await convertToModelMessages(messages),
     stopWhen: stepCountIs(4),
     tools: { searchClubs, getPricing, escalateToHuman },
     providerOptions: {
       gateway: {
-        models: ['openai/gpt-5.4', 'google/gemini-2.0-flash'],
+        models: ['google/gemini-2.5-flash-lite', 'openai/gpt-5.4-nano'],
       } satisfies GatewayProviderOptions,
     },
   });

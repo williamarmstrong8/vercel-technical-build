@@ -49,7 +49,8 @@ async function main() {
     const toolCorrect = firstToolCalled === testCase.expectedToolCalled;
 
     const judgeResult = await generateText({
-      model: 'openai/gpt-5.4',
+      model: 'openai/gpt-5-mini',
+      temperature: 0,
       prompt: `You are evaluating an AI agent response for correctness.
 
 Test description: ${testCase.description}
