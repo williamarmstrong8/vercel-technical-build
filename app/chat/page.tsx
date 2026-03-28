@@ -4,16 +4,8 @@ import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { useState, Suspense } from 'react';
 import Image from 'next/image';
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from '@/components/ai-elements/conversation';
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-} from '@/components/ai-elements/message';
+import {Conversation, ConversationContent, ConversationScrollButton} from '@/components/ai-elements/conversation';
+import {Message, MessageContent, MessageResponse} from '@/components/ai-elements/message';
 
 const SUGGESTIONS = [
   'Find tech clubs for college students',

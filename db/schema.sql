@@ -50,3 +50,13 @@ INSERT INTO clubs (id, name, category, audience, member_count, average_engagemen
   ('club_009', 'Midwest Yoga & Wellness Circle','Fitness', 'Seniors',              540,  '48%', 'Tier 3 (Starter)',    'Weekly yoga and gentle fitness for adults 55+. High brand loyalty — members respond well to health supplements, insurance, and wellness product sponsors.'),
   ('club_010', 'Collegiate Esports Alliance',  'Gaming',   'College Students',     1750, '88%', 'Tier 2 (Growth)',     'Multi-title varsity esports org competing in League of Legends, Valorant, and Rocket League. Massive Twitch viewership with a highly engaged student fan base.')
 ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================
+-- STEP 4: Leads table (email capture from landing page)
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS leads (
+  id         SERIAL PRIMARY KEY,
+  email      TEXT NOT NULL UNIQUE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);

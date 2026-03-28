@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
 import { sanity } from '@/lib/sanity';
+import { saveLead } from '@/app/actions/saveLead';
 
 export const metadata: Metadata = {
   title: 'ClubPack: Sponsor College Clubs That Actually Reach Your Audience',
@@ -44,7 +44,12 @@ const FALLBACK = {
   ctaButton: 'Open the advisor',
 };
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: Promise<{ lead?: string }>;
+}) {
+  const { lead } = await searchParams;
   const cms = await sanity
     .fetch(`*[_type == "landingPage"][0]`)
     .catch(() => null);
@@ -55,7 +60,7 @@ export default async function Home() {
     <main className="min-h-screen bg-background text-foreground">
 
       {/* Nav */}
-      <nav className="flex items-center justify-between px-6 py-5 max-w-5xl mx-auto">
+      <nav className="flex items-center px-6 py-5 max-w-5xl mx-auto">
         <Image
           src="/clubpack-logo-full.png"
           alt="ClubPack"
@@ -63,12 +68,6 @@ export default async function Home() {
           height={24}
           priority
         />
-        <Link
-          href="/chat"
-          className="text-sm font-medium text-foreground hover:opacity-70 transition-opacity"
-        >
-          Open Advisor →
-        </Link>
       </nav>
 
       {/* Hero */}
@@ -82,12 +81,22 @@ export default async function Home() {
         <p className="text-muted-foreground text-lg leading-relaxed mb-10 max-w-xl">
           {page.heroSubtitle}
         </p>
-        <Link
-          href="/chat"
-          className="px-7 py-3.5 bg-foreground text-background text-sm font-medium rounded-full hover:opacity-80 transition-opacity"
-        >
-          {page.heroCta}
-        </Link>
+        <form action={saveLead} className="flex gap-2 w-full max-w-sm">
+          <input type="hidden" name="redirectTo" value="/chat" />
+          <input
+            name="email"
+            type="email"
+            required
+            placeholder="your@brand.com"
+            className="flex-1 px-4 py-3 text-sm rounded-full border border-border bg-background text-foreground placeholder:text-muted-foreground outline-none focus:border-foreground/30 transition-colors"
+          />
+          <button
+            type="submit"
+            className="px-6 py-3 bg-foreground text-background text-sm font-medium rounded-full hover:opacity-80 transition-opacity whitespace-nowrap"
+          >
+            {page.heroCta}
+          </button>
+        </form>
       </section>
 
       {/* Stats */}
@@ -120,15 +129,32 @@ export default async function Home() {
         <h2 className="text-3xl font-semibold tracking-tight mb-4">
           {page.ctaHeading}
         </h2>
-        <p className="text-muted-foreground text-base mb-8 max-w-sm mx-auto">
+        <p className="text-muted-foreground text-base mb-6 max-w-sm mx-auto">
           {page.ctaSubtitle}
         </p>
-        <Link
-          href="/chat"
-          className="px-7 py-3.5 bg-foreground text-background text-sm font-medium rounded-full hover:opacity-80 transition-opacity"
-        >
-          {page.ctaButton}
-        </Link>
+
+        {lead === 'success' ? (
+          <p className="text-sm font-medium text-foreground mb-6">
+            ✓ You&apos;re on the list — we&apos;ll be in touch shortly.
+          </p>
+        ) : (
+          <form action={saveLead} className="flex justify-center gap-2 mb-6 max-w-sm mx-auto">
+            <input
+              name="email"
+              type="email"
+              required
+              placeholder="your@brand.com"
+              className="flex-1 px-4 py-2.5 text-sm rounded-full border border-border bg-background text-foreground placeholder:text-muted-foreground outline-none focus:border-foreground/30 transition-colors"
+            />
+            <button
+              type="submit"
+              className="px-5 py-2.5 bg-foreground text-background text-sm font-medium rounded-full hover:opacity-80 transition-opacity whitespace-nowrap"
+            >
+              {page.ctaButton}
+            </button>
+          </form>
+        )}
+
       </section>
 
     </main>
