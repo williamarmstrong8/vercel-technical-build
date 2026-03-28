@@ -1,12 +1,13 @@
 {
-  "name": "my-app",
+  "name": "clubpack-concierge",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "eval": "tsx eval/run-eval.ts"
   },
   "dependencies": {
     "@ai-sdk/gateway": "^3.0.83",

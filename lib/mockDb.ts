@@ -63,6 +63,56 @@ export const clubsDb: Club[] = [
         averageEngagementRate: '55%',
         pricingTier: 'Tier 3 (Starter)',
         description: 'Weekend watercolor and acrylic painting club. Members are highly receptive to art supply and lifestyle brands.'
+    },
+    {
+        id: 'club_006',
+        name: 'NYC Data Science Society',
+        category: 'Tech',
+        audience: 'Young Professionals',
+        memberCount: 1400,
+        averageEngagementRate: '72%',
+        pricingTier: 'Tier 1 (Enterprise)',
+        description: 'Monthly meetups for working data scientists and ML engineers across New York. Highly receptive to dev tools, cloud platforms, and B2B software.'
+    },
+    {
+        id: 'club_007',
+        name: 'Varsity Chess & Strategy Club',
+        category: 'Business',
+        audience: 'College Students',
+        memberCount: 320,
+        averageEngagementRate: '61%',
+        pricingTier: 'Tier 3 (Starter)',
+        description: 'Competitive collegiate chess club focused on strategic thinking and finance career prep. Members skew toward consulting and investment banking recruits.'
+    },
+    {
+        id: 'club_008',
+        name: 'Pacific Founders Collective',
+        category: 'Business',
+        audience: 'Founders',
+        memberCount: 890,
+        averageEngagementRate: '58%',
+        pricingTier: 'Tier 1 (Enterprise)',
+        description: 'West Coast network of Series A and seed-stage founders including ex-YC and a16z portfolio companies. Ideal for B2B SaaS, fintech, and legal/HR tools.'
+    },
+    {
+        id: 'club_009',
+        name: 'Midwest Yoga & Wellness Circle',
+        category: 'Fitness',
+        audience: 'Seniors',
+        memberCount: 540,
+        averageEngagementRate: '48%',
+        pricingTier: 'Tier 3 (Starter)',
+        description: 'Weekly yoga and gentle fitness for adults 55+. High brand loyalty — members respond well to health supplements, insurance, and wellness product sponsors.'
+    },
+    {
+        id: 'club_010',
+        name: 'Collegiate Esports Alliance',
+        category: 'Gaming',
+        audience: 'College Students',
+        memberCount: 1750,
+        averageEngagementRate: '88%',
+        pricingTier: 'Tier 2 (Growth)',
+        description: 'Multi-title varsity esports org competing in League of Legends, Valorant, and Rocket League. Massive Twitch viewership with a highly engaged student fan base.'
     }
 ];
 
