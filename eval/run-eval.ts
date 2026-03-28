@@ -35,7 +35,7 @@ async function main() {
 
       const steps = await result.steps;
       const toolsCalled = steps.flatMap((step) =>
-        step.toolCalls.map((tc: any) => tc.toolName)
+        step.toolCalls.map((tc) => tc.toolName)
       );
       firstToolCalled = toolsCalled[0] ?? 'none';
     } catch (err) {
@@ -49,7 +49,7 @@ async function main() {
     const toolCorrect = firstToolCalled === testCase.expectedToolCalled;
 
     const judgeResult = await generateText({
-      model: 'openai/gpt-4o-mini',
+      model: 'openai/gpt-5.4',
       prompt: `You are evaluating an AI agent response for correctness.
 
 Test description: ${testCase.description}
