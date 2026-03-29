@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import { cacheLife, cacheTag } from 'next/cache';
 import { sanity } from '@/lib/sanity';
+import { cacheLife, cacheTag } from 'next/cache';
 import { saveLead } from '@/app/actions/saveLead';
 import { LeadSuccess } from '@/components/LeadSuccess';
 
@@ -45,15 +45,15 @@ const FALLBACK = {
   ctaButton: 'Open the advisor',
 };
 
-async function getLandingPage() {
+export default async function Home() {
   'use cache';
   cacheLife('hours');
   cacheTag('landing-page');
-  return sanity.fetch(`*[_type == "landingPage"][0]`).catch(() => null);
-}
 
-export default async function Home() {
-  const cms = await getLandingPage();
+  const cms = await sanity
+    .fetch(`*[_type == "landingPage"][0]`)
+    .catch(() => null);
+
   const page = cms ?? FALLBACK;
 
   return (
