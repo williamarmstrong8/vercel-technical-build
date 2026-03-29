@@ -6,6 +6,10 @@ import { redirect } from 'next/navigation';
 export async function saveLead(formData: FormData) {
   const email = (formData.get('email') as string)?.trim();
   const redirectTo = (formData.get('redirectTo') as string) || '/?lead=success';
+  const safeRedirect =
+    redirectTo.startsWith('/') && !redirectTo.startsWith('//')
+      ? redirectTo
+      : '/?lead=success';
   if (!email || !email.includes('@')) return;
 
   const sql = getSql();
@@ -15,5 +19,5 @@ export async function saveLead(formData: FormData) {
     ON CONFLICT (email) DO NOTHING
   `;
 
-  redirect(redirectTo);
+  redirect(safeRedirect);
 }

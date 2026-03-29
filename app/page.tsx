@@ -113,7 +113,7 @@ export default async function Home() {
         {page.features?.map((f: { title: string; description: string }, i: number) => (
           <div key={f.title} className="flex flex-col gap-3">
             <div className="w-9 h-9 flex items-center justify-center rounded-lg border border-border text-foreground">
-              {FEATURE_ICONS[i]}
+              {FEATURE_ICONS[i % FEATURE_ICONS.length]}
             </div>
             <h3 className="font-medium text-sm">{f.title}</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">{f.description}</p>

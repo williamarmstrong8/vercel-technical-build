@@ -36,10 +36,12 @@ async function runTestCase(testCase: (typeof testCases)[0]) {
 
   const toolCorrect = firstToolCalled === testCase.expectedToolCalled;
 
-  const judgeResult = await generateText({
-    model: 'openai/gpt-5-mini',
-    temperature: 0,
-    prompt: `You are evaluating an AI agent response for correctness.
+  let verdict = 'Error';
+  try {
+    const judgeResult = await generateText({
+      model: 'openai/gpt-5-mini',
+      temperature: 0,
+      prompt: `You are evaluating an AI agent response for correctness.
 
 Test description: ${testCase.description}
 Expected first tool called: ${testCase.expectedToolCalled}
@@ -55,9 +57,13 @@ Scoring rules — apply in this order:
 5. If none of the above failures apply and the correct tool was called, PASS — do not penalise minor differences in wording or response style.
 
 Reply with exactly one word: Pass or Fail`,
-  });
+    });
+    verdict = judgeResult.text.trim();
+  } catch (err) {
+    verdict = `JudgeError: ${err instanceof Error ? err.message : String(err)}`;
+  }
 
-  return { testCase, firstToolCalled, toolCorrect, verdict: judgeResult.text.trim(), fullText };
+  return { testCase, firstToolCalled, toolCorrect, verdict, fullText };
 }
 
 async function main() {
