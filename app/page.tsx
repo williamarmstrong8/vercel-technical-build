@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import { cacheLife, cacheTag } from 'next/cache';
 import { sanity } from '@/lib/sanity';
 import { saveLead } from '@/app/actions/saveLead';
 import { LeadSuccess } from '@/components/LeadSuccess';
-
-export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'ClubPack: Sponsor College Clubs That Actually Reach Your Audience',
@@ -46,11 +45,15 @@ const FALLBACK = {
   ctaButton: 'Open the advisor',
 };
 
-export default async function Home() {
-  const cms = await sanity
-    .fetch(`*[_type == "landingPage"][0]`)
-    .catch(() => null);
+async function getLandingPage() {
+  'use cache';
+  cacheLife('hours');
+  cacheTag('landing-page');
+  return sanity.fetch(`*[_type == "landingPage"][0]`).catch(() => null);
+}
 
+export default async function Home() {
+  const cms = await getLandingPage();
   const page = cms ?? FALLBACK;
 
   return (
