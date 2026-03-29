@@ -1,5 +1,4 @@
 -- ClubPack Database Schema
--- Run once in the Neon SQL editor to set up and seed all tables.
 
 -- Club directory: the agent's searchClubs tool queries this table.
 CREATE TABLE IF NOT EXISTS clubs (

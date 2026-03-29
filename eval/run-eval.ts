@@ -31,7 +31,7 @@ async function runTestCase(testCase: (typeof testCases)[0]) {
       fullText += chunk;
     }
 
-    // Check which tool the agent called first (the key routing decision).
+    // Check which tool the agent called first.
     const steps = await result.steps;
     const toolsCalled = steps.flatMap((step) =>
       step.toolCalls.map((tc) => tc.toolName)
@@ -49,7 +49,7 @@ async function runTestCase(testCase: (typeof testCases)[0]) {
   let verdict = 'Error';
   try {
     const judgeResult = await generateText({
-      model: 'openai/gpt-5-mini',
+      model: 'openai/gpt-4o-mini',
       temperature: 0,
       prompt: `You are evaluating an AI agent response for correctness.
 
