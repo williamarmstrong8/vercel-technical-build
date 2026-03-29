@@ -1,37 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ClubPack Sponsor Concierge
 
-## Getting Started
+AI-powered concierge that helps brands discover and sponsor college clubs. Built with Next.js 16, AI SDK v6, and Vercel AI Gateway.
 
-First, run the development server:
+## What it does
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+1. **Landing page** — CMS-driven (Sanity) marketing page with email lead capture
+2. **AI chat** — Streaming concierge that searches clubs, fetches pricing, and escalates to sales
+3. **Eval harness** — 10 test cases with an LLM judge to catch prompt regressions
+
+## Architecture
+
+```
+/                  Cached Server Component (Sanity CMS + fallback)
+/chat              Client Component (useChat + AI Elements)
+/api/chat          Streaming route handler (streamText + 3 tools)
+/studio            Embedded Sanity Studio
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Agent flow:** User message → Claude Haiku 4.5 (via AI Gateway) → tool call (searchClubs / getPricing / escalateToHuman) → streamed response
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Model strategy:** Haiku 4.5 primary, Gemini 2.5 Flash Lite and GPT-5.4 Nano as gateway fallbacks. All chosen for low cost and fast tool calling.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Key decisions
 
-## Learn More
+- **Cache Components** (`'use cache'` + `cacheLife('hours')`) on the landing page so it's served from cache, not SSR'd per request
+- **LeadSuccess as a client component** reads `?lead=success` via `useSearchParams` to keep the landing page cacheable
+- **Tool-every-message prompt rule** forces the model to ground all responses in real database data
+- **Search-before-pricing** pattern prevents the model from hallucinating club IDs
+- **Escalation as a catch-all** for off-topic, hostile, or high-budget requests (safety guardrail)
+- **streamText over Agent class** because the tool loop is simple with no per-step hooks needed
+- **Server Actions** for lead capture give progressive enhancement (forms work without JS)
 
-To learn more about Next.js, take a look at the following resources:
+## Tech stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Framework:** Next.js 16.2.1 (App Router, Turbopack, Cache Components)
+- **AI:** AI SDK v6, Vercel AI Gateway, AI Elements
+- **Database:** Neon Postgres (clubs, pricing, leads)
+- **CMS:** Sanity (landing page content)
+- **UI:** shadcn/ui, Tailwind v4, Geist font
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Setup
 
-## Deploy on Vercel
+```bash
+pnpm install
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Create a `.env.local` with:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# vercel-technical-build
+```
+DATABASE_URL=              # Neon Postgres connection string
+NEXT_PUBLIC_SANITY_PROJECT_ID=
+NEXT_PUBLIC_SANITY_DATASET=
+```
+
+Seed the database:
+
+```
+Run db/schema.sql in the Neon SQL editor
+```
+
+Link to Vercel for AI Gateway credentials:
+
+```bash
+vercel link
+vercel env pull
+```
+
+Run locally:
+
+```bash
+pnpm dev
+```
+
+## Eval
+
+```bash
+pnpm eval
+```
+
+Runs 10 test cases against the real agent, then uses gpt-5-mini as an LLM judge with an ordered scoring rubric. Checks tool routing correctness, hallucination, escalation behavior, and small-budget handling.
+
+## Project structure
+
+```
+app/
+  page.tsx              Landing page (cached Server Component)
+  chat/page.tsx         Chat UI (Client Component)
+  api/chat/route.ts     Streaming chat endpoint
+  actions/saveLead.ts   Server Action for email capture
+  studio/               Embedded Sanity Studio
+
+lib/
+  agent.ts              Agent config (model, tools, gateway fallback)
+  prompts/concierge.ts  System prompt
+  tools/                searchClubs, getPricing, escalateToHuman
+  db.ts                 Neon Postgres client
+  sanity.ts             Sanity CMS client
+
+eval/
+  dataset.ts            10 test cases
+  run-eval.ts           Eval runner with LLM judge
+
+db/
+  schema.sql            Database schema and seed data
+```
