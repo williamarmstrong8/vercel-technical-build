@@ -5,6 +5,9 @@ import { cacheLife, cacheTag } from 'next/cache';
 import { saveLead } from '@/app/actions/saveLead';
 import { LeadSuccess } from '@/components/LeadSuccess';
 
+// Cached Server Component (hourly revalidation via Cache Components).
+// Content comes from Sanity CMS with a hardcoded fallback if Sanity is down.
+// LeadSuccess reads ?lead=success client side so the page stays cacheable.
 export const metadata: Metadata = {
   title: 'ClubPack: Sponsor College Clubs That Actually Reach Your Audience',
   description:

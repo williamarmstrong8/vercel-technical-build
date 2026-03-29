@@ -1,3 +1,7 @@
+// Eval harness: run with `pnpm eval`.
+// Runs the real agent (not mocked) against 10 test cases, then uses
+// an LLM judge to score each response. Catches prompt regressions
+// that unit tests can't.
 import { config } from 'dotenv';
 import { resolve } from 'path';
 config({ path: resolve(process.cwd(), '.env.local') });
@@ -19,12 +23,15 @@ async function runTestCase(testCase: (typeof testCases)[0]) {
   let firstToolCalled = 'none';
 
   try {
+    // Run the real agent so we test actual model + tool behavior.
     const result = await runAgent(messages);
 
+    // Collect the full streamed response for the judge to evaluate.
     for await (const chunk of result.textStream) {
       fullText += chunk;
     }
 
+    // Check which tool the agent called first (the key routing decision).
     const steps = await result.steps;
     const toolsCalled = steps.flatMap((step) =>
       step.toolCalls.map((tc) => tc.toolName)
@@ -34,8 +41,11 @@ async function runTestCase(testCase: (typeof testCases)[0]) {
     return { testCase, error: err instanceof Error ? err.message : String(err) };
   }
 
+  // Layer 1: deterministic check on tool routing.
   const toolCorrect = firstToolCalled === testCase.expectedToolCalled;
 
+  // Layer 2: LLM judge. Uses a different model than the agent to avoid
+  // self evaluation bias. Temperature 0 for consistent verdicts.
   let verdict = 'Error';
   try {
     const judgeResult = await generateText({
@@ -71,6 +81,7 @@ async function main() {
   console.log('  ClubPack Sponsor Concierge — Eval Run');
   console.log('============================================================\n');
 
+  // Run all 10 cases in parallel for speed.
   const results = await Promise.all(testCases.map(runTestCase));
 
   let passed = 0;

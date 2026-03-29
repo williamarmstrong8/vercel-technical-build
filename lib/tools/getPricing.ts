@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { getSql } from '@/lib/db';
 
+// Takes a club ID, not a name. The prompt forces the model to search
+// first so it always has a real ID before requesting pricing.
 export const getPricing = {
   description: 'Fetch accurate sponsorship pricing for a specific club by its ID.',
   inputSchema: z.object({
@@ -10,6 +12,7 @@ export const getPricing = {
   }),
   execute: async ({ clubId }: { clubId: string }) => {
     const sql = getSql();
+    // JOIN clubs to pricing so rates always come from the pricing table.
     const rows = await sql`
       SELECT c.id, c.name, c.pricing_tier,
              p.dedicated_email, p.newsletter_feature,
