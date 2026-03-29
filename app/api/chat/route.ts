@@ -1,6 +1,8 @@
 import type { UIMessage } from 'ai';
 import { runAgent } from '@/lib/agent';
 
+// Streams AI responses back to the client as typed UIMessage parts.
+// toUIMessageStreamResponse() is the v6 replacement for toDataStreamResponse().
 export async function POST(req: Request) {
   try {
     const { messages }: { messages: UIMessage[] } = await req.json();

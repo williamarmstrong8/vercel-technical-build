@@ -6,6 +6,8 @@ export interface TestCase {
   expectedOutcome: string;
 }
 
+// Covers search, pricing, escalation, hallucination, and small budget cases.
+// Each test asserts which tool should be called first.
 export const testCases: TestCase[] = [
   {
     id: 1,

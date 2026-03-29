@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+// Safety guardrail and lead capture in one tool. The reason enum gives
+// the sales team structured triage data instead of free text.
+// In production this would write to a CRM or send a Slack webhook.
 export const escalateToHuman = {
   description:
     'Escalate the conversation to a human sales rep. Use when budget exceeds $5,000, the brand wants something custom, the brand is frustrated, the request is out of scope, or you lack enough information to help.',
@@ -36,6 +39,7 @@ export const escalateToHuman = {
     budget?: number;
     summary: string;
   }) => {
+    // Structured so it's ready to forward to a CRM or webhook.
     const lead = {
       escalatedAt: new Date().toISOString(),
       reason,
@@ -45,6 +49,7 @@ export const escalateToHuman = {
       status: 'pending_human_review',
     };
 
+    // TODO: Production — write to DB and trigger Slack/CRM webhook.
     console.log('ESCALATION LEAD:', JSON.stringify(lead, null, 2));
 
     return {

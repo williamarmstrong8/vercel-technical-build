@@ -1,6 +1,9 @@
 import { z } from 'zod';
 import { getSql } from '@/lib/db';
 
+// Flexible club search: all filters are optional so the model can
+// combine them freely. The .describe() strings guide the model on
+// valid values without bloating the system prompt.
 export const searchClubs = {
   description: "Search the ClubPack database for clubs that match a brand's sponsorship goals.",
   inputSchema: z.object({
@@ -16,6 +19,7 @@ export const searchClubs = {
       .number()
       .optional()
       .describe('Minimum member count required'),
+    // z.enum constrains the model to exact tier names so it can't hallucinate tiers.
     pricingTier: z
       .enum(['Tier 1 (Enterprise)', 'Tier 2 (Growth)', 'Tier 3 (Starter)'])
       .optional()
@@ -38,6 +42,8 @@ export const searchClubs = {
     const min  = minMembers  ?? null;
     const tier = pricingTier ?? null;
 
+    // Parameterized query so it's safe from SQL injection.
+    // IS NULL pattern means a null param skips that filter entirely.
     const results = await sql`
       SELECT * FROM clubs
       WHERE (${cat}::text  IS NULL OR LOWER(category)   = LOWER(${cat}::text))
@@ -51,6 +57,7 @@ export const searchClubs = {
       return { found: false, message: 'No clubs found matching those criteria' };
     }
 
+    // Remap to camelCase so the model gets clean, consistent field names.
     return {
       found: true,
       count: results.length,
