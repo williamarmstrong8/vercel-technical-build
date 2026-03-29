@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { sanity } from '@/lib/sanity';
 import { saveLead } from '@/app/actions/saveLead';
+import { LeadSuccess } from '@/components/LeadSuccess';
+
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'ClubPack: Sponsor College Clubs That Actually Reach Your Audience',
@@ -23,7 +26,6 @@ const FEATURE_ICONS = [
   </svg>,
 ];
 
-// Fallback content if Sanity document hasn't been created yet
 const FALLBACK = {
   heroEyebrow: 'B2B Sponsor Concierge',
   heroHeadline: 'Sponsor college clubs that actually reach your audience',
@@ -44,12 +46,7 @@ const FALLBACK = {
   ctaButton: 'Open the advisor',
 };
 
-export default async function Home({
-  searchParams,
-}: {
-  searchParams: Promise<{ lead?: string }>;
-}) {
-  const { lead } = await searchParams;
+export default async function Home() {
   const cms = await sanity
     .fetch(`*[_type == "landingPage"][0]`)
     .catch(() => null);
@@ -133,27 +130,22 @@ export default async function Home({
           {page.ctaSubtitle}
         </p>
 
-        {lead === 'success' ? (
-          <p className="text-sm font-medium text-foreground mb-6">
-            ✓ You&apos;re on the list — we&apos;ll be in touch shortly.
-          </p>
-        ) : (
-          <form action={saveLead} className="flex justify-center gap-2 mb-6 max-w-sm mx-auto">
-            <input
-              name="email"
-              type="email"
-              required
-              placeholder="your@brand.com"
-              className="flex-1 px-4 py-2.5 text-sm rounded-full border border-border bg-background text-foreground placeholder:text-muted-foreground outline-none focus:border-foreground/30 transition-colors"
-            />
-            <button
-              type="submit"
-              className="px-5 py-2.5 bg-foreground text-background text-sm font-medium rounded-full hover:opacity-80 transition-opacity whitespace-nowrap"
-            >
-              {page.ctaButton}
-            </button>
-          </form>
-        )}
+        <LeadSuccess />
+        <form action={saveLead} className="flex justify-center gap-2 mb-6 max-w-sm mx-auto">
+          <input
+            name="email"
+            type="email"
+            required
+            placeholder="your@brand.com"
+            className="flex-1 px-4 py-2.5 text-sm rounded-full border border-border bg-background text-foreground placeholder:text-muted-foreground outline-none focus:border-foreground/30 transition-colors"
+          />
+          <button
+            type="submit"
+            className="px-5 py-2.5 bg-foreground text-background text-sm font-medium rounded-full hover:opacity-80 transition-opacity whitespace-nowrap"
+          >
+            {page.ctaButton}
+          </button>
+        </form>
 
       </section>
 
