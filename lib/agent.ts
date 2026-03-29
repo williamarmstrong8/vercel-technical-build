@@ -17,7 +17,7 @@ export async function runAgent(messages: UIMessage[]) {
     // Gateway fallback: if Haiku is down, try similarly fast/cheap models.
     providerOptions: {
       gateway: {
-        models: ['google/gemini-2.5-flash-lite', 'openai/gpt-5.4-nano'],
+        models: ['google/gemini-2.5-flash-lite', 'openai/gpt-4.1-nano'],
       } satisfies GatewayProviderOptions,
     },
   });
