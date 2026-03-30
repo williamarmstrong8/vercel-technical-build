@@ -4,16 +4,8 @@ import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { useState, Suspense } from 'react';
 import Image from 'next/image';
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from '@/components/ai-elements/conversation';
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-} from '@/components/ai-elements/message';
+import {Conversation, ConversationContent, ConversationScrollButton} from '@/components/ai-elements/conversation';
+import {Message, MessageContent, MessageResponse} from '@/components/ai-elements/message';
 
 const SUGGESTIONS = [
   'Find tech clubs for college students',
@@ -21,6 +13,7 @@ const SUGGESTIONS = [
   'I have a $500 budget, what can I sponsor?',
 ];
 
+// Shows the user what the agent is doing while tools run (e.g. "Searching...").
 function getToolStatus(type: string, state: string): { label: string; done: boolean } {
   const done = state === 'output-available';
   if (type.includes('searchClubs'))
@@ -34,6 +27,8 @@ function getToolStatus(type: string, state: string): { label: string; done: bool
 
 function ChatInner() {
   const [input, setInput] = useState('');
+  // v6 pattern: DefaultChatTransport replaces the old `api` string param.
+  // We manage input state ourselves and call sendMessage() directly.
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({ api: '/api/chat' }),
   });
@@ -47,7 +42,7 @@ function ChatInner() {
     setInput('');
   }
 
-  // ─── STATE 1: Hero ────────────────────────────────────────────────────────
+  // Empty state: show a hero with search input and suggestion chips.
   if (!hasMessages) {
     return (
       <div className="flex flex-col min-h-screen items-center justify-center bg-background px-4">
@@ -107,7 +102,7 @@ function ChatInner() {
     );
   }
 
-  // ─── STATE 2: Active chat ─────────────────────────────────────────────────
+  // Conversation state: header, scrollable message list, and input area.
   return (
     <div className="flex flex-col h-screen bg-background">
 
@@ -125,6 +120,9 @@ function ChatInner() {
 
       <Conversation className="flex-1">
         <ConversationContent>
+          {/* v6: iterate message.parts instead of message.content.
+              Text parts use MessageResponse for markdown rendering.
+              Tool parts show inline status indicators. */}
           {messages.map((message) => (
             <Message key={message.id} from={message.role}>
               <MessageContent>
@@ -192,6 +190,7 @@ function ChatInner() {
   );
 }
 
+// Suspense boundary needed for client side data fetching.
 export default function Chat() {
   return (
     <Suspense>

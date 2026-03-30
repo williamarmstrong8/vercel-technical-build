@@ -1,6 +1,8 @@
 import { z } from 'zod';
-import { clubsDb, pricingDb } from '@/lib/mockDb';
+import { getSql } from '@/lib/db';
 
+// Takes a club ID, not a name. The prompt forces the model to search
+// first so it always has a real ID before requesting pricing.
 export const getPricing = {
   description: 'Fetch accurate sponsorship pricing for a specific club by its ID.',
   inputSchema: z.object({
@@ -9,20 +11,34 @@ export const getPricing = {
       .describe('The id of the club to get pricing for (e.g. "club_001")'),
   }),
   execute: async ({ clubId }: { clubId: string }) => {
-    const club = clubsDb.find((c) => c.id === clubId);
+    const sql = getSql();
+    // JOIN clubs to pricing so rates always come from the pricing table.
+    const rows = await sql`
+      SELECT c.id, c.name, c.pricing_tier,
+             p.dedicated_email, p.newsletter_feature,
+             p.in_person_event_booth, p.minimum_spend
+      FROM clubs c
+      JOIN pricing p ON p.tier = c.pricing_tier
+      WHERE c.id = ${clubId}
+    `;
 
-    if (!club) {
+    if (rows.length === 0) {
       return { found: false, message: 'Club not found with that ID' };
     }
 
-    const pricing = pricingDb[club.pricingTier];
+    const row = rows[0];
 
     return {
       found: true,
-      clubName: club.name,
-      pricingTier: club.pricingTier,
-      pricing,
-      minimumSpend: pricing.minimumSpend,
+      clubName: row.name,
+      pricingTier: row.pricing_tier,
+      pricing: {
+        dedicatedEmail: row.dedicated_email,
+        newsletterFeature: row.newsletter_feature,
+        inPersonEventBooth: row.in_person_event_booth,
+        minimumSpend: row.minimum_spend,
+      },
+      minimumSpend: row.minimum_spend,
     };
   },
 };
