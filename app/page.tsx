@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 import { sanity } from '@/lib/sanity';
 import { cacheLife, cacheTag } from 'next/cache';
 import { saveLead } from '@/app/actions/saveLead';
-import { LeadSuccess } from '@/components/LeadSuccess';
-
 // Cached Server Component (hourly revalidation via Cache Components).
 // Content comes from Sanity CMS with a hardcoded fallback if Sanity is down.
-// LeadSuccess reads ?lead=success client side so the page stays cacheable.
+// Both forms capture email then redirect to /chat. Nav and skip links
+// let reviewers reach the concierge without entering an email.
 export const metadata: Metadata = {
   title: 'ClubPack: Sponsor College Clubs That Actually Reach Your Audience',
   description:
@@ -65,7 +65,7 @@ export default async function Home() {
     <main className="min-h-screen bg-background text-foreground">
 
       {/* Nav */}
-      <nav className="flex items-center px-6 py-5 max-w-5xl mx-auto">
+      <nav className="flex items-center justify-between px-6 py-5 max-w-5xl mx-auto">
         <Image
           src="/clubpack-logo-full.png"
           alt="ClubPack"
@@ -73,6 +73,12 @@ export default async function Home() {
           height={24}
           priority
         />
+        <Link
+          href="/chat"
+          className="text-sm font-medium text-foreground hover:opacity-70 transition-opacity"
+        >
+          Try the concierge
+        </Link>
       </nav>
 
       {/* Hero */}
@@ -86,7 +92,7 @@ export default async function Home() {
         <p className="text-muted-foreground text-lg leading-relaxed mb-10 max-w-xl">
           {page.heroSubtitle}
         </p>
-        <form action={saveLead} className="flex gap-2 w-full max-w-sm">
+        <form action={saveLead} className="flex gap-2 w-full max-w-sm mb-4">
           <input type="hidden" name="redirectTo" value="/chat" />
           <input
             name="email"
@@ -102,6 +108,9 @@ export default async function Home() {
             {page.heroCta}
           </button>
         </form>
+        <Link href="/chat" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+          or skip to the concierge
+        </Link>
       </section>
 
       {/* Stats */}
@@ -138,8 +147,8 @@ export default async function Home() {
           {page.ctaSubtitle}
         </p>
 
-        <LeadSuccess />
-        <form action={saveLead} className="flex justify-center gap-2 mb-6 max-w-sm mx-auto">
+        <form action={saveLead} className="flex justify-center gap-2 mb-4 max-w-sm mx-auto">
+          <input type="hidden" name="redirectTo" value="/chat" />
           <input
             name="email"
             type="email"
@@ -154,6 +163,9 @@ export default async function Home() {
             {page.ctaButton}
           </button>
         </form>
+        <Link href="/chat" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+          or skip to the concierge
+        </Link>
 
       </section>
 
