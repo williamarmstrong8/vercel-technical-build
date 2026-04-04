@@ -9,7 +9,7 @@ import {Message, MessageContent, MessageResponse} from '@/components/ai-elements
 
 const SUGGESTIONS = [
   'Find tech clubs for college students',
-  'What run clubs do you have?',
+  'What fitness clubs do you have?',
   'I have a $500 budget, what can I sponsor?',
 ];
 
