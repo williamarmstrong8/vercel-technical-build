@@ -96,7 +96,7 @@ async function main() {
       continue;
     }
 
-    const { testCase, firstToolCalled, toolCorrect, verdict } = res;
+    const { testCase, firstToolCalled, toolCorrect, verdict, fullText } = res;
     console.log(`Test ${testCase.id}: ${testCase.description}`);
     console.log(`  Tool expected:  ${testCase.expectedToolCalled}`);
     console.log(`  Tool called:    ${firstToolCalled}`);
@@ -104,6 +104,7 @@ async function main() {
     console.log(`  Judge verdict:  ${verdict}`);
     console.log(`  Result:         ${verdict === 'Pass' ? '✓ PASSED' : '✗ FAILED'}`);
     console.log('---');
+
 
     if (verdict === 'Pass') passed++;
     else failed++;

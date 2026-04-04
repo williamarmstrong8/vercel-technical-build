@@ -52,6 +52,8 @@ export default async function Home() {
   'use cache';
   cacheLife('hours');
   cacheTag('landing-page');
+  // TODO: Production - wire a Sanity webhook to call revalidateTag('landing-page', 'max')
+  // so content updates go live immediately instead of waiting for the hourly TTL.
 
   const cms = await sanity
     .fetch(`*[_type == "landingPage"][0]`)
